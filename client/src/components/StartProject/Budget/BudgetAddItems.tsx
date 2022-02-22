@@ -2,12 +2,11 @@ import React from 'react';
 import { EditButton } from '../commonStyled';
 function BudgetAddItems({ handleInput, removeBudgetList, list, idx }: any) {
   return (
-    <li id={idx}>
+    <li id={list.id}>
       <div>
         <label>예산 내용</label>
         <input
           type="text"
-          id={String(idx)}
           onChange={handleInput('content')}
           value={list.content}
           disabled
@@ -17,14 +16,15 @@ function BudgetAddItems({ handleInput, removeBudgetList, list, idx }: any) {
         <label>금액</label>
         <input
           type="number"
-          id={String(idx)}
           onChange={handleInput('amount')}
           value={list.amount}
           disabled
         />
       </div>
 
-      <EditButton onClick={() => removeBudgetList(idx)}>삭제</EditButton>
+      <EditButton onClick={() => removeBudgetList(idx, list.id)}>
+        삭제
+      </EditButton>
     </li>
   );
 }

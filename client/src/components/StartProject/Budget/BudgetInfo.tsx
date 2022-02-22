@@ -27,6 +27,7 @@ interface BudgetMemoProps {
 }
 
 interface BudgetContentProps {
+  id?: number;
   content: string;
   amount: string;
 }
@@ -42,6 +43,7 @@ export interface BudgetListProps {
 }
 
 interface BringListProps {
+  id?: number;
   amount: string;
   content: string;
 }
@@ -53,7 +55,7 @@ function BudgetInfo() {
 
   // const [grossAmountArr, setGrossAmountArr] = useState<number[]>([]);
   const [grossAmount, setGrossAmount] = useState<number>(0);
-  const [budgetId, setBudgetId] = useState<number[]>([]);
+
   const [bringList, setBringList] = useState<BudgetListProps[]>(
     projects.budget_items
   );
@@ -96,13 +98,6 @@ function BudgetInfo() {
       return;
     }
 
-    setBudgetList([
-      ...budgetList,
-      {
-        content: content,
-        amount: amount
-      }
-    ]);
     const response = await axios.post<projectBudgetProps>(
       `${REACT_APP_API_URL}/projects/${projectId}/budgets`,
       {
@@ -113,26 +108,29 @@ function BudgetInfo() {
         withCredentials: true
       }
     );
-
-    setBudgetId([...budgetId, response.data.id]);
+    setBudgetList([
+      ...budgetList,
+      {
+        id: response.data.id,
+        content: content,
+        amount: amount
+      }
+    ]);
     setBudgetContent({
       content: '',
       amount: ''
     });
     setGrossAmount(grossAmount + Number(amount));
+    setIsVaild(false);
   };
 
-  const removeBudgetList = async (idx: number) => {
+  const removeBudgetList = async (idx: number, id: number) => {
     setGrossAmount(grossAmount - Number(budgetList[idx].amount));
     const copyList = budgetList.slice();
-    const copyId = budgetId.slice();
     copyList.splice(idx, 1);
-    copyId.splice(idx, 1);
     setBudgetList(copyList);
-    setBudgetId(copyId);
-    let removeId = budgetId[idx];
     await axios.delete<projectBudgetProps>(
-      `${REACT_APP_API_URL}/projects/${projectId}/budgets/${removeId}`,
+      `${REACT_APP_API_URL}/projects/${projectId}/budgets/${id}`,
 
       {
         withCredentials: true
@@ -211,7 +209,7 @@ function BudgetInfo() {
             {/* 예산 일정 지금추가한거 불러오기 */}
             {budgetList.map((list: BringListProps, idx) => (
               <BudgetAddItems
-                key={idx}
+                key={list.id}
                 handleInput={handleInput}
                 removeBudgetList={removeBudgetList}
                 list={list}

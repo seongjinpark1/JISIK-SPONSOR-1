@@ -3,12 +3,11 @@ import { EditButton } from '../commonStyled';
 
 function TeamAddItems({ handleInput, removeTeamList, list, idx }: any) {
   return (
-    <li id={idx}>
+    <li id={list.id}>
       <div>
         <label>이름</label>
         <input
           type="text"
-          id={String(idx)}
           onChange={handleInput('name')}
           placeholder="팀원 이름"
           value={list.name}
@@ -26,7 +25,7 @@ function TeamAddItems({ handleInput, removeTeamList, list, idx }: any) {
           disabled
         />
       </div>
-      <EditButton onClick={() => removeTeamList(idx)}>삭제</EditButton>
+      <EditButton onClick={() => removeTeamList(idx, list.id)}>삭제</EditButton>
     </li>
   );
 }

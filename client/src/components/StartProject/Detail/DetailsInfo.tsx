@@ -34,6 +34,7 @@ interface DetailMemoProps {
   detailMemo: boolean;
 }
 interface TimeLineContentProps {
+  id?: number;
   content: string;
   date: string;
 }
@@ -61,7 +62,6 @@ function DetailsInfo() {
   const projectId = useSelector((state: RootState) => state.projectSt.id);
   const { projects } = useSelector((state: RootState) => state.project);
   const [timelineList, setTimeLineList] = useState<TimeLineContentProps[]>([]);
-  const [timeLineId, setTimeLineId] = useState<number[]>([]);
   const [bringList, setBringList] = useState<TimelineListProps[]>(
     projects.project_milestones
   );
@@ -108,13 +108,6 @@ function DetailsInfo() {
       setIsVaild(true);
       return;
     }
-    setTimeLineList([
-      ...timelineList,
-      {
-        content: content,
-        date: date
-      }
-    ]);
 
     const response = await axios.post<projectDetailProps>(
       `${REACT_APP_API_URL}/projects/${projectId}/milestones`,
@@ -126,7 +119,14 @@ function DetailsInfo() {
         withCredentials: true
       }
     );
-    setTimeLineId([...timeLineId, response.data.id]);
+    setTimeLineList([
+      ...timelineList,
+      {
+        id: response.data.id,
+        content: content,
+        date: date
+      }
+    ]);
     setTimeLineContent({
       content: '',
       date: ''
@@ -134,16 +134,12 @@ function DetailsInfo() {
     setIsVaild(false);
   };
 
-  const removeTimelineList = async (idx: number) => {
+  const removeTimelineList = async (idx: number, id: number) => {
     const copyList = timelineList.slice();
-    const copyId = timeLineId.slice();
     copyList.splice(idx, 1);
-    copyId.splice(idx, 1);
     setTimeLineList(copyList);
-    setTimeLineId(copyId);
-    let removeId = timeLineId[idx];
     await axios.delete<projectDetailProps>(
-      `${REACT_APP_API_URL}/projects/${projectId}/milestones/${removeId}`,
+      `${REACT_APP_API_URL}/projects/${projectId}/milestones/${id}`,
       {
         withCredentials: true
       }
@@ -279,7 +275,7 @@ function DetailsInfo() {
             {/* 일정 항목 지금 추가한거 불러오기 */}
             {timelineList.map((list: TimeLineContentProps, idx) => (
               <DetailAddItems
-                key={idx}
+                key={list.id}
                 handleInput={handleInput}
                 list={list}
                 idx={idx}

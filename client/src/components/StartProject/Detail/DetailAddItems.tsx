@@ -2,12 +2,11 @@ import React from 'react';
 import { EditButton } from '../commonStyled';
 function DetailAddItems({ handleInput, removeTimelineList, list, idx }: any) {
   return (
-    <li id={idx}>
+    <li id={list.id}>
       <div>
         <label>일정 내용</label>
         <input
           type="text"
-          id={String(idx)}
           onChange={handleInput('content')}
           placeholder="일정 항목 추가를 누르셔야 작성하신 항목이 반영됩니다"
           value={list.content}
@@ -24,7 +23,9 @@ function DetailAddItems({ handleInput, removeTimelineList, list, idx }: any) {
         />
       </div>
 
-      <EditButton onClick={() => removeTimelineList(idx)}>삭제</EditButton>
+      <EditButton onClick={() => removeTimelineList(idx, list.id)}>
+        삭제
+      </EditButton>
     </li>
   );
 }

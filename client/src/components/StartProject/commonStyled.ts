@@ -205,6 +205,10 @@ export const ProjectCoverImage = styled(SubTitleCss)`
 
 export const EditButton = styled(AddButton)`
   width: 73px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media screen and (max-width: 850px) {
     font-size: 12.8px;

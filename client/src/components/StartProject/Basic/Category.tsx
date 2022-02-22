@@ -35,11 +35,12 @@ function Category({ setCategoryValue }: ParentsProps) {
   }, []);
 
   const checkOnlyOne = (e: React.MouseEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
     checkInput.current.forEach((el: HTMLInputElement) => {
       el.checked = false;
     });
-    e.currentTarget.checked = true;
-    setCategoryValue(e.currentTarget.id);
+    target.checked = true;
+    setCategoryValue(target.id);
   };
 
   return (

@@ -33,6 +33,7 @@ interface TeamMemoProps {
 }
 
 interface TeamContentProps {
+  id?: number;
   name: string;
   bio: string;
 }
@@ -62,7 +63,6 @@ function TeamInfo() {
   const { projects } = useSelector((state: RootState) => state.project);
   const teamId = useSelector((state: RootState) => state.projectSt.teamId);
   const [memberList, setMemberList] = useState<TeamContentProps[]>([]);
-  const [memberId, setMemberId] = useState<number[]>([]);
   const [bringList, setBringList] = useState<any>(
     projects.project_team_members
   );
@@ -127,14 +127,6 @@ function TeamInfo() {
       return;
     }
 
-    setMemberList([
-      ...memberList,
-      {
-        name: name,
-        bio: bio
-      }
-    ]);
-
     const response = await axios.post<projectTeamProps>(
       `${REACT_APP_API_URL}/projects/${projectId}/teams/${teamId}/members`,
       {
@@ -145,7 +137,15 @@ function TeamInfo() {
         withCredentials: true
       }
     );
-    setMemberId([...memberId, response.data.id]);
+
+    setMemberList([
+      ...memberList,
+      {
+        id: response.data.id,
+        name: name,
+        bio: bio
+      }
+    ]);
     setTeamContent({
       name: '',
       bio: ''
@@ -153,17 +153,13 @@ function TeamInfo() {
     setIsVaild(false);
   };
 
-  const removeTeamList = async (idx: number) => {
+  const removeTeamList = async (idx: number, id: number) => {
     const copyList = memberList.slice();
-    const copyId = memberId.slice();
     copyList.splice(idx, 1);
-    copyId.splice(idx, 1);
     setMemberList(copyList);
-    setMemberId(copyId);
-    let removeId = memberId[idx];
 
     await axios.delete<projectTeamProps>(
-      `${REACT_APP_API_URL}/projects/${projectId}/teams/${teamId}/members/${removeId}`,
+      `${REACT_APP_API_URL}/projects/${projectId}/teams/${teamId}/members/${id}`,
       {
         withCredentials: true
       }
@@ -256,7 +252,7 @@ function TeamInfo() {
             {/* 팀원 지금추가한거 불러오기 */}
             {memberList.map((list: any, idx) => (
               <TeamAddItems
-                key={idx}
+                key={list.id}
                 handleInput={handleInput}
                 removeTeamList={removeTeamList}
                 list={list}
